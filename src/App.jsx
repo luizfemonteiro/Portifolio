@@ -1,0 +1,570 @@
+import { useEffect, useRef, useState } from 'react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import {
+  ArrowDown01Icon,
+  Location01Icon,
+  Menu01Icon,
+  Cancel01Icon,
+  Mortarboard01Icon,
+  Briefcase01Icon,
+  Clock01Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  Mail01Icon,
+  GithubIcon,
+  Linkedin01Icon,
+  InstagramIcon,
+  ArrowUpRight01Icon,
+} from '@hugeicons/core-free-icons';
+import NetworkBackground from './components/NetworkBackground.jsx';
+import TechText from './components/TechText.jsx';
+import CardSwap, { Card } from './components/CardSwap.jsx';
+import ContactArea from './components/contact-area.tsx';
+import Reveal, { useInView } from './components/Reveal.jsx';
+import SectionTitle from './components/SectionTitle.jsx';
+import { base, contact } from './data.js';
+import { useLang } from './i18n.jsx';
+import { handleCvClick } from './cv.js';
+
+// Coloque sua foto em src/assets/foto.jpg (ou .png / .webp) e currículo em src/assets/curriculo.pdf
+const photoFiles = import.meta.glob('./assets/foto.{jpg,jpeg,png,webp}', { eager: true, query: '?url', import: 'default' });
+const cvFiles = import.meta.glob('./assets/curriculo.pdf', { eager: true, query: '?url', import: 'default' });
+const photoUrl = Object.values(photoFiles)[0];
+const cvUrl = Object.values(cvFiles)[0];
+
+const sectionIds = ['sobre', 'trajetoria', 'projetos', 'habilidades', 'contato'];
+
+const Icon = ({ icon, size = 20 }) => <HugeiconsIcon icon={icon} size={size} strokeWidth={1.8} />;
+
+function LangSwitch() {
+  const { lang, setLang, t } = useLang();
+  return (
+    <div className="lang" role="group" aria-label={t.ui.langLabel}>
+      {['pt', 'en'].map((l) => (
+        <button key={l} type="button" className={lang === l ? 'on' : ''} aria-pressed={lang === l} onClick={() => setLang(l)}>
+          {l.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Nav() {
+  const { t } = useLang();
+  const [active, setActive] = useState('');
+  const [open, setOpen] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: '-45% 0px -50% 0px' }
+    );
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    });
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(max > 0 ? window.scrollY / max : 0);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, []);
+
+  return (
+    <header className="nav">
+      <div className="nav-bar">
+        <a href="#top" className="brand" onClick={() => setOpen(false)}>
+          <span className="brand-mark">LF</span>
+          <span className="brand-name">Luiz Felipe</span>
+        </a>
+        <nav className={`nav-links ${open ? 'open' : ''}`} aria-label={t.ui.navLabel}>
+          {t.nav.map(([id, label]) => (
+            <a key={id} href={`#${id}`} className={id === 'contato' ? 'nav-cta' : active === id ? 'active' : ''} onClick={() => setOpen(false)}>
+              {label}
+            </a>
+          ))}
+        </nav>
+        <div className="nav-right">
+          <LangSwitch />
+          <button className="nav-toggle" onClick={() => setOpen((v) => !v)} aria-label={open ? t.ui.menuClose : t.ui.menuOpen} aria-expanded={open}>
+            <Icon icon={open ? Cancel01Icon : Menu01Icon} size={22} />
+          </button>
+        </div>
+      </div>
+      <div className="progress" style={{ transform: `scaleX(${progress})` }} />
+    </header>
+  );
+}
+
+function Photo() {
+  const { t } = useLang();
+  return (
+    <div className="photo">
+      <div className="photo-frame" />
+      <div className="photo-shape">
+        {photoUrl ? (
+          <img src={photoUrl} alt={`${t.ui.photoAlt} ${base.name}`} />
+        ) : (
+          <div className="photo-empty">
+            <span>LF</span>
+            <small>{t.ui.photoHint}</small>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Hero() {
+  const { t } = useLang();
+  // Ao rolar, o início se afasta em camadas (nome, texto e foto em velocidades diferentes).
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const p = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.8)));
+      document.documentElement.style.setProperty('--hp', p.toFixed(4));
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+  return (
+    <section id="top" className="hero">
+      <div className="wrap hero-stack">
+        <ul className="hero-meta">
+          <li className="hero-status"><span className="pulse" aria-hidden="true" />{t.hero.status}</li>
+          <li><Icon icon={Location01Icon} size={18} />{base.city}</li>
+          <li><Icon icon={Clock01Icon} size={18} />{t.hero.availability}</li>
+        </ul>
+        <h1 className="sr-only">{base.name}</h1>
+        <div aria-hidden="true" className="hero-title">
+          <TechText
+            text={base.shortName}
+            fontFamily="'Bricolage Grotesque', 'Segoe UI', sans-serif"
+            fontWeight={800}
+            fontSize={190}
+            letterSpacing={-0.03}
+            align="left"
+            reveal="letter"
+            dashLength={2}
+            dashGap={2}
+            specks={32}
+            intro="assemble"
+            introDuration={2.2}
+            clickKick
+            guides={false}
+            accentColor="#ffc857"
+            strokeWidth={1}
+            className="hero-title-canvas"
+            bleedX={120}
+            bleedY={130}
+          />
+        </div>
+        <div className="hero-grid">
+          <div className="hero-copy">
+            <p className="hero-text">{t.hero.headline}</p>
+            <div className="hero-cta">
+              <a className="btn btn-primary" href="#projetos">
+                {t.hero.seeProjects}
+                <Icon icon={ArrowDown01Icon} size={18} />
+              </a>
+              <a className="btn btn-ghost" href="#contato">{t.hero.talk}</a>
+              {cvUrl && (
+                <a className="btn btn-ghost" href={cvUrl} download={t.contact.cvFile} onClick={(e) => handleCvClick(e, cvUrl, t.contact.cvFile)}>{t.contact.cv}</a>
+              )}
+            </div>
+            <ul className="hero-social" aria-label={t.ui.socialLabel}>
+              {[
+                [InstagramIcon, 'Instagram', contact.instagram],
+                [Linkedin01Icon, 'LinkedIn', contact.linkedin],
+                [GithubIcon, 'GitHub', contact.github],
+                [Mail01Icon, t.ui.email, `mailto:${contact.email}`],
+              ].map(([ic, label, href]) => (
+                <li key={label}>
+                  <a href={href} aria-label={label} title={label} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
+                    <Icon icon={ic} size={20} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <Photo />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Marquee() {
+  const { t } = useLang();
+  const items = t.marquee.items;
+  const wrapRef = useRef(null);
+  const trackRef = useRef(null);
+
+  // A faixa anda sozinha, acelera quando você rola a página e muda de direção conforme a rolagem.
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const track = trackRef.current;
+    if (!wrap || !track || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const row = track.firstElementChild;
+    let x = 0;
+    let dir = -1;
+    let boost = 0;
+    let lastY = window.scrollY;
+    let last = performance.now();
+    let hover = false;
+    let visible = true;
+    let raf = 0;
+    const tick = (now) => {
+      const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
+      last = now;
+      const y = window.scrollY;
+      const dy = y - lastY;
+      lastY = y;
+      if (visible) {
+        const speed = Math.min(Math.abs(dy / dt), 3000) / 3000;
+        boost += (speed * 700 - boost) * Math.min(1, dt * 6);
+        if (Math.abs(dy) > 0.5) dir = dy > 0 ? -1 : 1;
+        x += dir * ((hover ? 0 : 55) + boost) * dt;
+        const w = row.offsetWidth;
+        if (w > 0) {
+          x %= w;
+          if (x > 0) x -= w;
+        }
+        track.style.transform = `translate3d(${x.toFixed(2)}px,0,0)`;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; });
+    io.observe(wrap);
+    const enter = () => { hover = true; };
+    const leave = () => { hover = false; };
+    wrap.addEventListener('pointerenter', enter);
+    wrap.addEventListener('pointerleave', leave);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      wrap.removeEventListener('pointerenter', enter);
+      wrap.removeEventListener('pointerleave', leave);
+    };
+  }, []);
+
+  const row = (key, hidden) => (
+    <ul className="marquee-row" key={key} aria-hidden={hidden || undefined}>
+      {items.map((it) => (
+        <li key={it}>
+          <span className="marquee-sq" aria-hidden="true" />
+          {it}
+        </li>
+      ))}
+    </ul>
+  );
+  return (
+    <div ref={wrapRef} className="marquee" role="group" aria-label={`${t.marquee.label}: ${items.join(', ')}`}>
+      <div ref={trackRef} className="marquee-track">
+        {[0, 1, 2, 3].map((k) => row(k, k > 0))}
+      </div>
+    </div>
+  );
+}
+
+function CountUp({ to }) {
+  const ref = useRef(null);
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let raf = 0;
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      if (reduce) return setN(to);
+      const start = performance.now();
+      const tick = (now) => {
+        const u = Math.min(1, (now - start) / 1200);
+        setN(Math.round(to * (1 - Math.pow(1 - u, 3))));
+        if (u < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    });
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [to]);
+  return <span ref={ref}>{n}</span>;
+}
+
+function About() {
+  const { t } = useLang();
+  const about = t.about;
+  return (
+    <section id="sobre" className="section">
+      <div className="wrap">
+        <SectionTitle index={1}>{about.title}</SectionTitle>
+        <div className="about-grid">
+          <Reveal className="about-text">
+            {about.paragraphs.map((p) => (
+              <p key={p}>{p}</p>
+            ))}
+            <ul className="stats">
+              {/* 3 = cursos em andamento (Santander, Coding Branding Selling e ICBEU). Atualize se mudar. */}
+              {[
+                [t.projects.items.length, about.statProjects],
+                [3, about.statCourses],
+              ].map(([value, label]) => (
+                <li key={label}>
+                  <strong><CountUp to={value} /></strong>
+                  <span>{label}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={150}>
+            <dl className="facts">
+              {about.facts.map(([k, v]) => (
+                <div key={k}>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Journey() {
+  const { t } = useLang();
+  const tlRef = useRef(null);
+  const [lit, setLit] = useState(0);
+
+  // A linha amarela é desenhada conforme você rola; cada marco acende quando a linha chega nele.
+  useEffect(() => {
+    const el = tlRef.current;
+    if (!el) return undefined;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect();
+      const trigger = window.innerHeight * 0.62;
+      const p = Math.min(1, Math.max(0, (trigger - r.top) / r.height));
+      el.style.setProperty('--p', p.toFixed(4));
+      let n = 0;
+      el.querySelectorAll('.tl-item').forEach((item, i) => {
+        if (item.getBoundingClientRect().top + 22 < trigger) n = i + 1;
+      });
+      setLit(n);
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <section id="trajetoria" className="section">
+      <div className="wrap">
+        <SectionTitle index={2}>{t.journey.title}</SectionTitle>
+        <ol ref={tlRef} className="timeline">
+          {t.journey.items.map((it, i) => (
+            <Reveal as="li" key={it.title} delay={i * 80} className={`tl-item ${i < lit ? 'lit' : ''}`}>
+              <p className="tl-when">{it.period}</p>
+              <span className="tl-icon">
+                <Icon icon={it.kind === 'formacao' ? Mortarboard01Icon : Briefcase01Icon} size={20} />
+              </span>
+              <div>
+                <h3>{it.title}</h3>
+                <p className="tl-place">{it.place}</p>
+                <p className="tl-period">{it.period}</p>
+                {it.text && <p className="tl-text">{it.text}</p>}
+              </div>
+            </Reveal>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function useNarrow(max = 640) {
+  const query = `(max-width: ${max}px)`;
+  const [narrow, setNarrow] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setNarrow(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, [query]);
+  return narrow;
+}
+
+const pad = (n) => String(n + 1).padStart(2, '0');
+
+function Projects() {
+  const { t } = useLang();
+  const projects = t.projects.items;
+  const swap = useRef(null);
+  const [front, setFront] = useState(0);
+  const narrow = useNarrow();
+
+  return (
+    <section id="projetos" className="section">
+      <div className="wrap">
+        <SectionTitle index={3}>{t.projects.title}</SectionTitle>
+        <div className="projects-layout">
+          <Reveal className="projects-side">
+            <p className="projects-lead">
+              {t.projects.lead}
+            </p>
+            <div className="projects-ctrl">
+              <button onClick={() => swap.current?.prev()} aria-label={t.ui.prevFolder}>
+                <Icon icon={ArrowLeft01Icon} size={20} />
+              </button>
+              <span className="projects-count" aria-live="polite">
+                {pad(front)} / {pad(projects.length - 1)}
+              </span>
+              <button onClick={() => swap.current?.next()} aria-label={t.ui.nextFolder}>
+                <Icon icon={ArrowRight01Icon} size={20} />
+              </button>
+            </div>
+          </Reveal>
+          <div className="projects-stage">
+            <CardSwap
+              ref={swap}
+              className="projects-swap"
+              ariaLabel={t.ui.stackLabel}
+              width={narrow ? 300 : 500}
+              height={narrow ? 390 : 340}
+              cardDistance={narrow ? 18 : 34}
+              verticalDistance={narrow ? 34 : 46}
+              depth={70}
+              skewAmount={4}
+              cardRadius={16}
+              delay={5500}
+              dim={0.55}
+              bounce={0.3}
+              onChange={setFront}
+            >
+              {projects.map((p, i) => (
+                <Card key={p.tab} customClass={`folder-card folder-${i % 4}`}>
+                  <div className="folder">
+                    <div className="folder-tab">
+                      <span className="folder-no">{pad(i)}</span>
+                      <span className="folder-name">{p.tab}</span>
+                    </div>
+                    <div className="folder-body">
+                      <div className="folder-top">
+                        <h3>{p.title}</h3>
+                        <span className="status">{p.status}</span>
+                      </div>
+                      <p>{p.text}</p>
+                      {p.href && (
+                        <a className="folder-link" href={p.href} target="_blank" rel="noreferrer">
+                          {t.projects.linkLabel}
+                          <Icon icon={ArrowUpRight01Icon} size={16} />
+                        </a>
+                      )}
+                      <ul className="tags">
+                        {p.tags.map((t) => (
+                          <li key={t}>{t}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </CardSwap>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Número "aleatório" fixo a partir do índice (para o chip sempre vir do mesmo lugar)
+const scatter = (i, salt) => {
+  const v = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
+  return v - Math.floor(v);
+};
+
+function Skills() {
+  const { t } = useLang();
+  const [ref, shown] = useInView(0.2);
+  let n = 0;
+  return (
+    <section id="habilidades" className="section">
+      <div className="wrap">
+        <SectionTitle index={4}>{t.skills.title}</SectionTitle>
+        <div ref={ref} className={`skills ${shown ? 'is-in' : ''}`}>
+          {t.skills.groups.map((s) => (
+            <div key={s.group} className="skill-group">
+              <h3>{s.group}</h3>
+              <ul className="chips">
+                {s.items.map((it) => {
+                  const i = n++;
+                  return (
+                    <li
+                      key={it}
+                      style={{
+                        '--dx': `${Math.round((scatter(i, 1) - 0.5) * 220)}px`,
+                        '--dy': `${Math.round((scatter(i, 2) - 0.5) * 160)}px`,
+                        '--r': `${Math.round((scatter(i, 3) - 0.5) * 40)}deg`,
+                        transitionDelay: `${i * 90}ms`,
+                      }}
+                    >
+                      {it}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <NetworkBackground />
+      <Nav />
+      <main>
+        <Hero />
+        <Marquee />
+        <About />
+        <Journey />
+        <Projects />
+        <Skills />
+        <ContactArea photoUrl={photoUrl} cvUrl={cvUrl} />
+      </main>
+      <footer className="footer">
+        <div className="wrap">© {new Date().getFullYear()} {base.name}</div>
+      </footer>
+    </>
+  );
+}
