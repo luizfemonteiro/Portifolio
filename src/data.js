@@ -41,7 +41,7 @@ export const copy = {
     hero: {
       status: 'Disponível para estágio',
       availability: 'Disponível manhã e tarde',
-      headline: 'Estudante de Engenharia de Software em busca de um estágio remoto, para aprender construindo.',
+      headline: 'Estudante de Engenharia de Software em busca de estágio, para aprender construindo na prática e gerar resultados.',
       seeProjects: 'Ver projetos',
       talk: 'Falar comigo',
     },
@@ -256,7 +256,7 @@ export const copy = {
     hero: {
       status: 'Open to internships',
       availability: 'Available mornings and afternoons',
-      headline: 'Software Engineering student looking for a remote internship, to learn by building.',
+      headline: 'Software Engineering student looking for an internship, ready to learn by building and deliver real results.',
       seeProjects: 'See projects',
       talk: 'Get in touch',
     },
