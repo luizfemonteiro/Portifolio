@@ -503,10 +503,10 @@ function Projects() {
                         <span className="status">{p.status}</span>
                       </div>
                       <p>{p.text}</p>
-                      {(p.image || getProjectImg(p.tab) || getProjectImg(p.title)) && (
+                      {(getProjectImg(p.image) || getProjectImg(p.tab) || getProjectImg(p.title)) && (
                         <div className="folder-media">
                           <img
-                            src={p.image || getProjectImg(p.tab) || getProjectImg(p.title)}
+                            src={getProjectImg(p.image) || getProjectImg(p.tab) || getProjectImg(p.title)}
                             alt={p.title}
                             loading="lazy"
                           />
