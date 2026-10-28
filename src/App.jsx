@@ -31,7 +31,7 @@ const photoUrl = Object.values(photoFiles)[0];
 const cvUrl = Object.values(cvFiles)[0];
 
 // Carrega automaticamente imagens dos projetos colocadas em src/assets/ (ex: projeto-cortes.jpg, projeto-alfred.png, etc)
-const projectImgs = import.meta.glob('./assets/projeto-*.{jpg,jpeg,png,webp}', { eager: true, query: '?url', import: 'default' });
+const projectImgs = import.meta.glob('./assets/*.{jpg,jpeg,png,webp}', { eager: true, query: '?url', import: 'default' });
 const getProjectImg = (name) => {
   if (!name) return undefined;
   const norm = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
