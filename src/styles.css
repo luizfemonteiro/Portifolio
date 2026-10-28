@@ -188,6 +188,8 @@ main, .footer, .nav { position: relative; z-index: 1; }
 .projects-swap .folder-body > * { transition: opacity 0.35s ease; }
 .projects-swap .card-swap-slot:not([data-front]) .folder-body > * { opacity: 0; }
 .folder-body p { color: #dbdefa; font-size: 0.98rem; line-height: 1.55; }
+.folder-media { width: 100%; height: 125px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.16); background: rgba(0, 0, 0, 0.25); box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.3); }
+.folder-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .status { padding: 0.15rem 0.7rem; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.22); color: #d6d9f6; font-size: 0.8rem; font-weight: 500; }
 .status.live { border-color: var(--warm); color: var(--warm); }
 .tags { display: flex; flex-wrap: wrap; gap: 0.45rem; }

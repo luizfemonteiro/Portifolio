@@ -7,6 +7,8 @@ export const base = {
 
 export const contact = {
   email: 'Luizfelipemonteiro223@gmail.com',
+  whatsapp: 'https://wa.me/5564992785015?text=Ol%C3%A1%20Luiz%20Felipe,%20vi%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar!',
+  whatsappRaw: '+55 64 99278-5015',
   linkedin: 'https://www.linkedin.com/in/luiz-felipe-engsoftware/',
   github: 'https://github.com/luizfemonteiro',
   instagram: 'https://www.instagram.com/luizin.7xt/',
@@ -59,8 +61,9 @@ export const copy = {
         ['Cidade', 'Uberlândia, MG'],
         ['Formatura prevista', 'Dezembro de 2029'],
         ['Disponibilidade', 'Manhã e tarde'],
-        ['Inglês', 'Básico, em curso'],
-        ['CNH', 'Categoria AB'],
+        ['Modelo de trabalho', 'Remoto, híbrido ou presencial (Uberlândia e região)'],
+        ['Foco atual', 'Engenharia de Software / Full Stack'],
+        ['Inglês', 'Básico / Leitura técnica (em evolução)'],
       ],
     },
     journey: {
@@ -157,18 +160,58 @@ export const copy = {
       title: 'Habilidades',
       groups: [
         {
-          group: 'Aprendendo agora',
+          group: 'Linguagens (básico / em aprendizado)',
           items: [
-            'C (faculdade)',
-            'Banco de dados (faculdade)',
-            'Cibersegurança (Santander)',
-            'HTML, CSS e JavaScript (Coding Branding Selling)',
-            'WordPress e noções de Figma (Coding Branding Selling)',
+            'C (Faculdade)',
+            'SQL (Faculdade)',
+            'JavaScript (Em curso)',
+            'Python (Básico / Projetos)',
           ],
         },
-        { group: 'Base', items: ['Lógica de programação (curso concluído)', 'Informática: Windows e internet'] },
-        { group: 'Como eu trabalho', items: ['Organização', 'Disciplina', 'Comunicação', 'Trabalho em equipe', 'Proatividade'] },
-        { group: 'Idiomas', items: ['Português', 'Inglês básico'] },
+        {
+          group: 'Frontend & Web (básico)',
+          items: [
+            'HTML5 & CSS3 (Em curso)',
+            'React (Básico)',
+            'Tailwind CSS',
+            'Vite',
+          ],
+        },
+        {
+          group: 'Backend & Dados (em evolução)',
+          items: [
+            'Modelagem de Banco de Dados (Faculdade)',
+            'Flask / Python (Básico)',
+            'Noções de APIs REST',
+          ],
+        },
+        {
+          group: 'Ferramentas & Design',
+          items: [
+            'Git & GitHub',
+            'VS Code',
+            'Noções de Figma',
+            'WordPress',
+          ],
+        },
+        {
+          group: 'Como eu trabalho (Soft Skills)',
+          items: [
+            'Resolução de problemas',
+            'Comunicação',
+            'Proatividade',
+            'Trabalho em equipe',
+            'Vontade de aprender',
+            'Organização',
+          ],
+        },
+        {
+          group: 'Idiomas',
+          items: [
+            'Português (Nativo)',
+            'Inglês (Básico / Leitura técnica no ICBEU)',
+          ],
+        },
       ],
     },
     contact: {
@@ -181,6 +224,7 @@ export const copy = {
       copied: 'E-mail copiado!',
       contributions: 'contribuições no último ano',
       unit: { one: 'contribuição', other: 'contribuições' },
+      whatsappText: 'Conversar no WhatsApp (+55 64 99278-5015)',
       linkedinText: 'Engenharia de Software, Uniube',
       instagramText: 'Siga no Instagram',
     },
@@ -232,8 +276,9 @@ export const copy = {
         ['City', 'Uberlândia, MG, Brazil'],
         ['Expected graduation', 'December 2029'],
         ['Availability', 'Mornings and afternoons'],
-        ['English', 'Basic, in progress'],
-        ["Driver's license", 'Category AB'],
+        ['Work model', 'Remote, hybrid or on-site (Uberlândia & region)'],
+        ['Current focus', 'Software Engineering / Full Stack'],
+        ['English', 'Basic / Technical reading (in progress)'],
       ],
     },
     journey: {
@@ -330,18 +375,58 @@ export const copy = {
       title: 'Skills',
       groups: [
         {
-          group: 'Learning now',
+          group: 'Languages (basic / learning)',
           items: [
-            'C (university)',
-            'Databases (university)',
-            'Cybersecurity (Santander)',
-            'HTML, CSS and JavaScript (Coding Branding Selling)',
-            'WordPress and Figma basics (Coding Branding Selling)',
+            'C (University)',
+            'SQL (University)',
+            'JavaScript (In progress)',
+            'Python (Basic / Projects)',
           ],
         },
-        { group: 'Foundations', items: ['Programming logic (course completed)', 'Computing: Windows and internet'] },
-        { group: 'How I work', items: ['Organization', 'Discipline', 'Communication', 'Teamwork', 'Proactivity'] },
-        { group: 'Languages', items: ['Portuguese', 'Basic English'] },
+        {
+          group: 'Frontend & Web (basic)',
+          items: [
+            'HTML5 & CSS3 (In progress)',
+            'React (Basic)',
+            'Tailwind CSS',
+            'Vite',
+          ],
+        },
+        {
+          group: 'Backend & Data (in progress)',
+          items: [
+            'Database Modeling (University)',
+            'Flask / Python (Basic)',
+            'REST API fundamentals',
+          ],
+        },
+        {
+          group: 'Tools & Design',
+          items: [
+            'Git & GitHub',
+            'VS Code',
+            'Figma basics',
+            'WordPress',
+          ],
+        },
+        {
+          group: 'How I work (Soft Skills)',
+          items: [
+            'Problem solving',
+            'Communication',
+            'Proactivity',
+            'Teamwork',
+            'Eagerness to learn',
+            'Organization',
+          ],
+        },
+        {
+          group: 'Languages',
+          items: [
+            'Portuguese (Native)',
+            'English (Basic / Technical reading at ICBEU)',
+          ],
+        },
       ],
     },
     contact: {
@@ -354,6 +439,7 @@ export const copy = {
       copied: 'Email copied!',
       contributions: 'contributions in the last year',
       unit: { one: 'contribution', other: 'contributions' },
+      whatsappText: 'Chat on WhatsApp (+55 64 99278-5015)',
       linkedinText: 'Software Engineering, Uniube',
       instagramText: 'Follow on Instagram',
     },
