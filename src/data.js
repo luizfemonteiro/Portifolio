@@ -131,6 +131,7 @@ export const copy = {
           status: 'Versão inicial',
           text: 'Automação para criadores de conteúdo que baixa vídeos do YouTube, transcreve o áudio com IA (Whisper), seleciona os momentos de maior retenção e gera cortes verticais 9:16 com legendas automáticas via ffmpeg.',
           tags: ['Python', 'Flask', 'faster-whisper', 'ffmpeg', 'yt-dlp'],
+          image: 'cortes-ai-agendamento',
         },
         {
           title: 'Alfred',
@@ -346,6 +347,7 @@ export const copy = {
           status: 'Initial version',
           text: 'Content creation automation tool that downloads YouTube videos, transcribes audio using Whisper AI, detects high-retention highlights, and renders vertical 9:16 video clips with automated subtitles via ffmpeg.',
           tags: ['Python', 'Flask', 'faster-whisper', 'ffmpeg', 'yt-dlp'],
+          image: 'cortes-ai-agendamento',
         },
         {
           title: 'Alfred',
