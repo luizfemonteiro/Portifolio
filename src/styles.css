@@ -218,12 +218,14 @@ main, .footer, .nav { position: relative; z-index: 1; }
   .nav-links { position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; padding: 0.8rem 1.5rem 1.2rem; background: rgba(13, 16, 48, 0.96); border-bottom: 1px solid var(--line); transform: translateY(-8px); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
   .nav-links.open { opacity: 1; transform: none; pointer-events: auto; }
   .hero-grid, .about-grid, .projects-layout { grid-template-columns: 1fr; }
+  .hero-grid { gap: 2rem; }
   .hero-title { height: clamp(75px, 16vw, 130px); margin-left: 0; width: 100%; }
   .hero-title .hero-title-canvas { top: -30px; bottom: -30px; left: -20px; right: -20px; }
   .hero { min-height: auto; padding-top: calc(var(--nav-h) + 1.5rem); padding-bottom: 3rem; }
   .hero-text { font-size: 1.15rem; }
   .projects-stage { height: 480px; }
-  .photo { width: min(70%, 280px); grid-row: 1; justify-self: start; }
+  .photo { width: min(75%, 260px); grid-row: 1; justify-self: center; margin: 0 auto 1.5rem; }
+  .photo-frame { transform: translate(10px, 10px); }
   .skills { grid-template-columns: 1fr; }
   .section { padding: 4.5rem 0; }
   .timeline::before, .timeline::after { left: 21px; }
@@ -234,11 +236,11 @@ main, .footer, .nav { position: relative; z-index: 1; }
 
 @media (max-width: 480px) {
   .wrap { width: min(1120px, 100% - 1.5rem); }
-  .hero-title { height: clamp(65px, 15vw, 95px); }
-  .hero-meta { gap: 0.4rem 1rem; font-size: 0.92rem; }
+  .hero-title { height: clamp(60px, 14vw, 90px); }
   .hero-cta { gap: 0.6rem; }
   .btn { padding: 0.75rem 1.15rem; font-size: 0.95rem; }
-  .photo { width: min(85%, 240px); }
+  .photo { width: min(80%, 230px); }
+  .projects-stage { height: 440px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

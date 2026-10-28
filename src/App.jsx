@@ -160,7 +160,7 @@ function Photo() {
 
 function Hero() {
   const { t } = useLang();
-  const narrow = useNarrow(768);
+  const narrow = useNarrow(860);
   // Ao rolar, o início se afasta em camadas (nome, texto e foto em velocidades diferentes).
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
@@ -450,7 +450,7 @@ function Projects() {
   const projects = t.projects.items;
   const swap = useRef(null);
   const [front, setFront] = useState(0);
-  const narrow = useNarrow();
+  const narrow = useNarrow(860);
 
   return (
     <section id="projetos" className="section">
@@ -478,12 +478,12 @@ function Projects() {
               ref={swap}
               className="projects-swap"
               ariaLabel={t.ui.stackLabel}
-              width={narrow ? 300 : 500}
-              height={narrow ? 390 : 340}
-              cardDistance={narrow ? 18 : 34}
-              verticalDistance={narrow ? 34 : 46}
-              depth={70}
-              skewAmount={4}
+              width={narrow ? 280 : 500}
+              height={narrow ? 380 : 340}
+              cardDistance={narrow ? 14 : 34}
+              verticalDistance={narrow ? 30 : 46}
+              depth={narrow ? 50 : 70}
+              skewAmount={narrow ? 2 : 4}
               cardRadius={16}
               delay={5500}
               dim={0.55}
