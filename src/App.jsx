@@ -34,10 +34,13 @@ const cvUrl = Object.values(cvFiles)[0];
 const projectImgs = import.meta.glob('./assets/*.{jpg,jpeg,png,webp}', { eager: true, query: '?url', import: 'default' });
 const getProjectImg = (name) => {
   if (!name) return undefined;
-  const norm = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+  // Normaliza removendo acentos E hífens/underscores para comparar sem pontuação
+  const strip = (s) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+  const norm = strip(name);
   return Object.entries(projectImgs).find(([path]) => {
-    const fileNorm = path.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    return fileNorm.includes(norm);
+    // Pega só o nome do arquivo (sem extensão) e normaliza do mesmo jeito
+    const fileName = path.split('/').pop().replace(/\.[^.]+$/, '');
+    return strip(fileName).includes(norm) || norm.includes(strip(fileName));
   })?.[1];
 };
 
