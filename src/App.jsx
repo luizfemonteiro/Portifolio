@@ -2,12 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowDown01Icon,
-  Location01Icon,
   Menu01Icon,
   Cancel01Icon,
   Mortarboard01Icon,
   Briefcase01Icon,
-  Clock01Icon,
   ArrowLeft01Icon,
   ArrowRight01Icon,
   Mail01Icon,
@@ -117,7 +115,9 @@ function Nav() {
     <header className="nav">
       <div className="nav-bar">
         <a href="#top" className="brand" onClick={() => setOpen(false)}>
-          <span className="brand-mark">LF</span>
+          <span className="brand-mark">
+            {photoUrl ? <img src={photoUrl} alt={base.name} className="brand-photo" /> : 'LF'}
+          </span>
           <span className="brand-name">Luiz Felipe</span>
         </a>
         <nav className={`nav-links ${open ? 'open' : ''}`} aria-label={t.ui.navLabel}>
@@ -181,11 +181,6 @@ function Hero() {
   return (
     <section id="top" className="hero">
       <div className="wrap hero-stack">
-        <ul className="hero-meta">
-          <li className="hero-status"><span className="pulse" aria-hidden="true" />{t.hero.status}</li>
-          <li><Icon icon={Location01Icon} size={18} />{base.city}</li>
-          <li><Icon icon={Clock01Icon} size={18} />{t.hero.availability}</li>
-        </ul>
         <h1 className="sr-only">{base.name}</h1>
         <div aria-hidden="true" className="hero-title">
           <TechText
