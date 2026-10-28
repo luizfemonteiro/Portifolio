@@ -453,6 +453,7 @@ function Projects() {
   const projects = t.projects.items;
   const swap = useRef(null);
   const [front, setFront] = useState(0);
+  const [gallery, setGallery] = useState(null); // { images, current }
   const narrow = useNarrow(860);
 
   return (
@@ -506,21 +507,25 @@ function Projects() {
                         <span className="status">{p.status}</span>
                       </div>
                       <p>{p.text}</p>
-                      {(getProjectImg(p.image) || getProjectImg(p.tab) || getProjectImg(p.title)) && (
-                        <div className="folder-media">
-                          <img
-                            src={getProjectImg(p.image) || getProjectImg(p.tab) || getProjectImg(p.title)}
-                            alt={p.title}
-                            loading="lazy"
-                          />
-                        </div>
-                      )}
-                      {p.href && (
-                        <a className="folder-link" href={p.href} target="_blank" rel="noreferrer">
-                          {t.projects.linkLabel}
-                          <Icon icon={ArrowUpRight01Icon} size={16} />
-                        </a>
-                      )}
+                      <div className="folder-actions">
+                        {p.gallery && p.gallery.length > 0 && (
+                          <button
+                            className="folder-gallery-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setGallery({ images: p.gallery, current: 0, title: p.title });
+                            }}
+                          >
+                            {p.galleryLabel || '📸 Ver fotos'}
+                          </button>
+                        )}
+                        {p.href && (
+                          <a className="folder-link" href={p.href} target="_blank" rel="noreferrer">
+                            {t.projects.linkLabel}
+                            <Icon icon={ArrowUpRight01Icon} size={16} />
+                          </a>
+                        )}
+                      </div>
                       <ul className="tags">
                         {p.tags.map((t) => (
                           <li key={t}>{t}</li>
@@ -533,6 +538,59 @@ function Projects() {
             </CardSwap>
           </div>
         </div>
+
+        {/* Gallery Modal */}
+        {gallery && (
+          <div className="gallery-overlay" onClick={() => setGallery(null)}>
+            <div className="gallery-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="gallery-header">
+                <h3>{gallery.title}</h3>
+                <button className="gallery-close" onClick={() => setGallery(null)} aria-label="Fechar galeria">
+                  <Icon icon={Cancel01Icon} size={22} />
+                </button>
+              </div>
+              <div className="gallery-main">
+                <button
+                  className="gallery-arrow gallery-arrow-left"
+                  onClick={() => setGallery(g => ({ ...g, current: (g.current - 1 + g.images.length) % g.images.length }))}
+                  aria-label="Foto anterior"
+                >
+                  <Icon icon={ArrowLeft01Icon} size={24} />
+                </button>
+                <div className="gallery-img-wrap">
+                  <img
+                    src={getProjectImg(gallery.images[gallery.current].img)}
+                    alt={gallery.images[gallery.current].label}
+                  />
+                  <span className="gallery-label">{gallery.images[gallery.current].label}</span>
+                </div>
+                <button
+                  className="gallery-arrow gallery-arrow-right"
+                  onClick={() => setGallery(g => ({ ...g, current: (g.current + 1) % g.images.length }))}
+                  aria-label="Próxima foto"
+                >
+                  <Icon icon={ArrowRight01Icon} size={24} />
+                </button>
+              </div>
+              <div className="gallery-thumbs">
+                {gallery.images.map((item, i) => (
+                  <button
+                    key={item.img}
+                    className={`gallery-thumb ${i === gallery.current ? 'active' : ''}`}
+                    onClick={() => setGallery(g => ({ ...g, current: i }))}
+                  >
+                    <img src={getProjectImg(item.img)} alt={item.label} loading="lazy" />
+                  </button>
+                ))}
+              </div>
+              <div className="gallery-dots">
+                {gallery.images.map((_, i) => (
+                  <span key={i} className={`gallery-dot ${i === gallery.current ? 'active' : ''}`} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

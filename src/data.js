@@ -131,7 +131,14 @@ export const copy = {
           status: 'Versão inicial',
           text: 'Automação para criadores de conteúdo que baixa vídeos do YouTube, transcreve o áudio com IA (Whisper), seleciona os momentos de maior retenção e gera cortes verticais 9:16 com legendas automáticas via ffmpeg.',
           tags: ['Python', 'Flask', 'faster-whisper', 'ffmpeg', 'yt-dlp'],
-          image: 'cortes-ai-agendamento',
+          gallery: [
+            { img: 'projeto-cortes', label: 'Cortes gerados automaticamente' },
+            { img: 'cortes-ai-agendamento', label: 'Publicação e agendamento' },
+            { img: 'cortes-ai-editor', label: 'Editor de legendas e estilos' },
+            { img: 'cortes-ai-marca', label: 'Configuração de marca' },
+            { img: 'cortes-ai-contas', label: 'Conexão com redes sociais' },
+          ],
+          galleryLabel: '📸 Ver fotos do app',
         },
         {
           title: 'Alfred',
@@ -347,7 +354,14 @@ export const copy = {
           status: 'Initial version',
           text: 'Content creation automation tool that downloads YouTube videos, transcribes audio using Whisper AI, detects high-retention highlights, and renders vertical 9:16 video clips with automated subtitles via ffmpeg.',
           tags: ['Python', 'Flask', 'faster-whisper', 'ffmpeg', 'yt-dlp'],
-          image: 'cortes-ai-agendamento',
+          gallery: [
+            { img: 'projeto-cortes', label: 'Auto-generated clips' },
+            { img: 'cortes-ai-agendamento', label: 'Publish & schedule' },
+            { img: 'cortes-ai-editor', label: 'Subtitle & style editor' },
+            { img: 'cortes-ai-marca', label: 'Brand settings' },
+            { img: 'cortes-ai-contas', label: 'Social media accounts' },
+          ],
+          galleryLabel: '📸 View app screenshots',
         },
         {
           title: 'Alfred',
