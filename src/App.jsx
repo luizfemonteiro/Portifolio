@@ -36,6 +36,18 @@ const sectionIds = ['sobre', 'trajetoria', 'projetos', 'habilidades', 'contato']
 
 const Icon = ({ icon, size = 20 }) => <HugeiconsIcon icon={icon} size={size} strokeWidth={1.8} />;
 
+function useNarrow(max = 640) {
+  const query = `(max-width: ${max}px)`;
+  const [narrow, setNarrow] = useState(() => (typeof window !== 'undefined' ? window.matchMedia(query).matches : false));
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setNarrow(mq.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, [query]);
+  return narrow;
+}
+
 function LangSwitch() {
   const { lang, setLang, t } = useLang();
   return (
@@ -123,6 +135,7 @@ function Photo() {
 
 function Hero() {
   const { t } = useLang();
+  const narrow = useNarrow(768);
   // Ao rolar, o início se afasta em camadas (nome, texto e foto em velocidades diferentes).
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
@@ -154,22 +167,22 @@ function Hero() {
             text={base.shortName}
             fontFamily="'Bricolage Grotesque', 'Segoe UI', sans-serif"
             fontWeight={800}
-            fontSize={190}
+            fontSize={narrow ? 110 : 190}
             letterSpacing={-0.03}
             align="left"
             reveal="letter"
             dashLength={2}
             dashGap={2}
-            specks={32}
+            specks={narrow ? 16 : 32}
             intro="assemble"
-            introDuration={2.2}
+            introDuration={narrow ? 1.6 : 2.2}
             clickKick
             guides={false}
             accentColor="#ffc857"
             strokeWidth={1}
             className="hero-title-canvas"
-            bleedX={120}
-            bleedY={130}
+            bleedX={narrow ? 20 : 120}
+            bleedY={narrow ? 30 : 130}
           />
         </div>
         <div className="hero-grid">
@@ -407,18 +420,6 @@ function Journey() {
       </div>
     </section>
   );
-}
-
-function useNarrow(max = 640) {
-  const query = `(max-width: ${max}px)`;
-  const [narrow, setNarrow] = useState(() => window.matchMedia(query).matches);
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const on = () => setNarrow(mq.matches);
-    mq.addEventListener('change', on);
-    return () => mq.removeEventListener('change', on);
-  }, [query]);
-  return narrow;
 }
 
 const pad = (n) => String(n + 1).padStart(2, '0');
