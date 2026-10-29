@@ -13,6 +13,7 @@ import {
   Linkedin01Icon,
   InstagramIcon,
   ArrowUpRight01Icon,
+  Image01Icon,
 } from '@hugeicons/core-free-icons';
 import NetworkBackground from './components/NetworkBackground.jsx';
 import TechText from './components/TechText.jsx';
@@ -448,12 +449,216 @@ function Journey() {
 
 const pad = (n) => String(n + 1).padStart(2, '0');
 
+const initialsOf = (name) =>
+  name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase();
+
+/**
+ * Capa da pasta: mostra a primeira captura do projeto (ou um placeholder quando
+ * ainda não há fotos) e deixa navegar entre as imagens sem sair do card.
+ */
+function FolderCover({ images = [], title, labels, onOpen, self }) {
+  const [index, setIndex] = useState(0);
+  const total = images.length;
+
+  if (self) {
+    return (
+      <div className="folder-cover folder-cover--self">
+        <span className="folder-cover-live">
+          <i aria-hidden="true" />
+          {labels.self}
+        </span>
+        <small>{labels.selfNote}</small>
+      </div>
+    );
+  }
+
+  if (!total) {
+    return (
+      <div className="folder-cover folder-cover--empty" aria-hidden="true">
+        <span className="folder-cover-mono">{initialsOf(title)}</span>
+        <small>{labels.empty}</small>
+      </div>
+    );
+  }
+
+  const current = index % total;
+  const shot = images[current];
+  const src = getProjectImg(shot.img);
+  const move = (step) => setIndex((value) => (value + step + total) % total);
+
+  return (
+    <div className="folder-cover">
+      {src ? (
+        <>
+          <img className="folder-cover-blur" src={src} alt="" aria-hidden="true" draggable={false} />
+          <img className="folder-cover-shot" src={src} alt={shot.label} draggable={false} />
+        </>
+      ) : (
+        <span className="folder-cover-mono">{initialsOf(title)}</span>
+      )}
+
+      <button
+        type="button"
+        className="folder-cover-open"
+        onClick={() => onOpen(current)}
+        aria-label={`${labels.open}: ${shot.label}`}
+      >
+        <Icon icon={Image01Icon} size={15} />
+        <span>{labels.open}</span>
+      </button>
+
+      {total > 1 && (
+        <>
+          <button
+            type="button"
+            className="folder-cover-nav folder-cover-nav--prev"
+            onClick={() => move(-1)}
+            aria-label={labels.prev}
+          >
+            <Icon icon={ArrowLeft01Icon} size={16} />
+          </button>
+          <button
+            type="button"
+            className="folder-cover-nav folder-cover-nav--next"
+            onClick={() => move(1)}
+            aria-label={labels.next}
+          >
+            <Icon icon={ArrowRight01Icon} size={16} />
+          </button>
+          <span className="folder-cover-count">
+            {current + 1}/{total}
+          </span>
+          <span className="folder-cover-dots" aria-hidden="true">
+            {images.map((image, dot) => (
+              <i key={image.img} className={dot === current ? 'on' : ''} />
+            ))}
+          </span>
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Galeria em tela cheia, com teclado, swipe e miniaturas. */
+function Gallery({ images, start = 0, title, onClose }) {
+  const { t } = useLang();
+  const [index, setIndex] = useState(start);
+  const total = images.length;
+  const shot = images[index];
+  const closeRef = useRef(null);
+  const swipeX = useRef(null);
+  const close = useRef(onClose);
+  close.current = onClose;
+
+  const go = (step) => setIndex((value) => (value + step + total) % total);
+
+  useEffect(() => {
+    const onKey = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close.current();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        setIndex((value) => (value + 1) % total);
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        setIndex((value) => (value - 1 + total) % total);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeRef.current?.focus({ preventScroll: true });
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [total]);
+
+  return (
+    <div className="gallery-overlay" onClick={onClose}>
+      <div
+        className="gallery-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${t.ui.galleryKicker} — ${title}`}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="gallery-header">
+          <div>
+            <p className="gallery-kicker">{t.ui.galleryKicker}</p>
+            <h3>{title}</h3>
+          </div>
+          <button ref={closeRef} type="button" className="gallery-close" onClick={onClose} aria-label={t.ui.galleryClose}>
+            <Icon icon={Cancel01Icon} size={20} />
+          </button>
+        </div>
+
+        <div
+          className="gallery-main"
+          onTouchStart={(event) => {
+            swipeX.current = event.touches[0].clientX;
+          }}
+          onTouchEnd={(event) => {
+            if (swipeX.current === null) return;
+            const delta = event.changedTouches[0].clientX - swipeX.current;
+            swipeX.current = null;
+            if (Math.abs(delta) > 45) go(delta < 0 ? 1 : -1);
+          }}
+        >
+          {total > 1 && (
+            <button type="button" className="gallery-arrow gallery-arrow-left" onClick={() => go(-1)} aria-label={t.ui.galleryPrev}>
+              <Icon icon={ArrowLeft01Icon} size={22} />
+            </button>
+          )}
+          <img key={shot.img} className="gallery-img" src={getProjectImg(shot.img)} alt={shot.label} />
+          {total > 1 && (
+            <button type="button" className="gallery-arrow gallery-arrow-right" onClick={() => go(1)} aria-label={t.ui.galleryNext}>
+              <Icon icon={ArrowRight01Icon} size={22} />
+            </button>
+          )}
+        </div>
+
+        <div className="gallery-bar">
+          <span className="gallery-caption">{shot.label}</span>
+          <span className="gallery-counter">
+            {index + 1} / {total}
+          </span>
+        </div>
+
+        {total > 1 && (
+          <div className="gallery-thumbs">
+            {images.map((item, thumb) => (
+              <button
+                key={item.img}
+                type="button"
+                className={`gallery-thumb${thumb === index ? ' active' : ''}`}
+                onClick={() => setIndex(thumb)}
+                aria-label={item.label}
+                aria-current={thumb === index ? 'true' : undefined}
+              >
+                <img src={getProjectImg(item.img)} alt="" loading="lazy" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 function Projects() {
   const { t } = useLang();
   const projects = t.projects.items;
   const swap = useRef(null);
   const [front, setFront] = useState(0);
-  const [gallery, setGallery] = useState(null); // { images, current }
+  const [gallery, setGallery] = useState(null); // { images, index, title }
   const narrow = useNarrow(860);
 
   return (
@@ -483,7 +688,7 @@ function Projects() {
               className="projects-swap"
               ariaLabel={t.ui.stackLabel}
               width={narrow ? 280 : 500}
-              height={narrow ? 380 : 340}
+              height={narrow ? 380 : 400}
               cardDistance={narrow ? 14 : 34}
               verticalDistance={narrow ? 30 : 46}
               depth={narrow ? 50 : 70}
@@ -494,102 +699,62 @@ function Projects() {
               bounce={0.3}
               onChange={setFront}
             >
-              {projects.map((p, i) => (
-                <Card key={p.tab} customClass={`folder-card folder-${i % 4}`}>
-                  <div className="folder">
-                    <div className="folder-tab">
-                      <span className="folder-no">{pad(i)}</span>
-                      <span className="folder-name">{p.tab}</span>
-                    </div>
-                    <div className="folder-body">
-                      <div className="folder-top">
-                        <h3>{p.title}</h3>
-                        <span className="status">{p.status}</span>
+              {projects.map((p, i) => {
+                const images = p.gallery ?? [];
+                return (
+                  <Card key={p.tab} customClass={`folder-card folder-${i % 4}`}>
+                    <div className="folder">
+                      <div className="folder-tab">
+                        <span className="folder-no">{pad(i)}</span>
+                        <span className="folder-name">{p.tab}</span>
                       </div>
-                      <p>{p.text}</p>
-                      <div className="folder-actions">
-                        {p.gallery && p.gallery.length > 0 && (
-                          <button
-                            className="folder-gallery-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setGallery({ images: p.gallery, current: 0, title: p.title });
-                            }}
-                          >
-                            {p.galleryLabel || '📸 Ver fotos'}
-                          </button>
-                        )}
+                      <FolderCover
+                        images={images}
+                        title={p.tab}
+                        self={Boolean(p.self)}
+                        labels={{
+                          open: t.ui.gallery,
+                          empty: t.ui.gallerySoon,
+                          prev: t.ui.galleryPrev,
+                          next: t.ui.galleryNext,
+                          self: t.ui.gallerySelf,
+                          selfNote: t.ui.gallerySelfNote,
+                        }}
+                        onOpen={(index) => setGallery({ images, index, title: p.title })}
+                      />
+                      <div className="folder-body">
+                        <div className="folder-top">
+                          <h3>{p.title}</h3>
+                          <span className="status">{p.status}</span>
+                        </div>
+                        <p>{p.text}</p>
                         {p.href && (
                           <a className="folder-link" href={p.href} target="_blank" rel="noreferrer">
                             {t.projects.linkLabel}
                             <Icon icon={ArrowUpRight01Icon} size={16} />
                           </a>
                         )}
+                        <ul className="tags">
+                          {p.tags.map((tag) => (
+                            <li key={tag}>{tag}</li>
+                          ))}
+                        </ul>
                       </div>
-                      <ul className="tags">
-                        {p.tags.map((t) => (
-                          <li key={t}>{t}</li>
-                        ))}
-                      </ul>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
             </CardSwap>
           </div>
         </div>
 
-        {/* Gallery Modal */}
         {gallery && (
-          <div className="gallery-overlay" onClick={() => setGallery(null)}>
-            <div className="gallery-modal" onClick={(e) => e.stopPropagation()}>
-              <div className="gallery-header">
-                <h3>{gallery.title}</h3>
-                <button className="gallery-close" onClick={() => setGallery(null)} aria-label="Fechar galeria">
-                  <Icon icon={Cancel01Icon} size={22} />
-                </button>
-              </div>
-              <div className="gallery-main">
-                <button
-                  className="gallery-arrow gallery-arrow-left"
-                  onClick={() => setGallery(g => ({ ...g, current: (g.current - 1 + g.images.length) % g.images.length }))}
-                  aria-label="Foto anterior"
-                >
-                  <Icon icon={ArrowLeft01Icon} size={24} />
-                </button>
-                <div className="gallery-img-wrap">
-                  <img
-                    src={getProjectImg(gallery.images[gallery.current].img)}
-                    alt={gallery.images[gallery.current].label}
-                  />
-                  <span className="gallery-label">{gallery.images[gallery.current].label}</span>
-                </div>
-                <button
-                  className="gallery-arrow gallery-arrow-right"
-                  onClick={() => setGallery(g => ({ ...g, current: (g.current + 1) % g.images.length }))}
-                  aria-label="Próxima foto"
-                >
-                  <Icon icon={ArrowRight01Icon} size={24} />
-                </button>
-              </div>
-              <div className="gallery-thumbs">
-                {gallery.images.map((item, i) => (
-                  <button
-                    key={item.img}
-                    className={`gallery-thumb ${i === gallery.current ? 'active' : ''}`}
-                    onClick={() => setGallery(g => ({ ...g, current: i }))}
-                  >
-                    <img src={getProjectImg(item.img)} alt={item.label} loading="lazy" />
-                  </button>
-                ))}
-              </div>
-              <div className="gallery-dots">
-                {gallery.images.map((_, i) => (
-                  <span key={i} className={`gallery-dot ${i === gallery.current ? 'active' : ''}`} />
-                ))}
-              </div>
-            </div>
-          </div>
+          <Gallery
+            images={gallery.images}
+            start={gallery.index}
+            title={gallery.title}
+            onClose={() => setGallery(null)}
+          />
         )}
       </div>
     </section>
